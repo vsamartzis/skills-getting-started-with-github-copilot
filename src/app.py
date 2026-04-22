@@ -5,14 +5,19 @@ A super simple FastAPI application that allows students to view and sign up
 for extracurricular activities at Mergington High School.
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
+from pydantic import BaseModel
 import os
 from pathlib import Path
 
 app = FastAPI(title="Mergington High School API",
               description="API for viewing and signing up for extracurricular activities")
+
+# Pydantic model for signup request
+class SignupRequest(BaseModel):
+    email: str
 
 # Mount the static files directory
 current_dir = Path(__file__).parent
@@ -89,7 +94,7 @@ def get_activities():
 
 
 @app.post("/activities/{activity_name}/signup")
-def signup_for_activity(activity_name: str, email: str):
+def signup_for_activity(activity_name: str, email: str = Query(...)):
     """Sign up a student for an activity"""
     # Validate activity exists
     if activity_name not in activities:
